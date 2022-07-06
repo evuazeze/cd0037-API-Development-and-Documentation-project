@@ -8,6 +8,16 @@ from models import setup_db, Question, Category
 
 QUESTIONS_PER_PAGE = 10
 
+def paginate_questions(request, selection):
+    page = request.args.get('page', 1, type=int)
+    start = (page - 1) * QUESTIONS_PER_PAGE
+    end = start + QUESTIONS_PER_PAGE
+
+    questions = [question.format() for question in selection]
+    current_questions = questions[start:end]
+
+    return current_questions
+
 def create_app(test_config=None):
     # create and configure the app
     app = Flask(__name__)
@@ -57,6 +67,26 @@ def create_app(test_config=None):
     ten questions per page and pagination at the bottom of the screen for three pages.
     Clicking on the page numbers should update the questions.
     """
+    @app.route('/questions')
+    def retrieve_paginated_questions():
+        questionSelection = Question.query.order_by(Question.id).all()
+        current_questions = paginate_questions(request, questionSelection)
+
+        categorySelection = Category.query.order_by(Category.id).all()
+        categories = {category.id: category.type for category in categorySelection}
+
+        if len(current_questions) == 0 or len(categories) == 0:
+            abort(404)
+
+        return jsonify(
+            {
+                'success': True,
+                'questions': current_questions,
+                'totalQuestions': len(Question.query.all()),
+                'categories': categories,
+                'currentCategory': None
+            }
+        )
 
     """
     @TODO:
@@ -114,6 +144,13 @@ def create_app(test_config=None):
     Create error handlers for all expected errors
     including 404 and 422.
     """
+
+    @app.errorhandler(404)
+    def not_found(error):
+        return (
+            jsonify({'success': False, 'error': 404, 'message': 'resource not found'}),
+            404
+        )
 
     return app
 
