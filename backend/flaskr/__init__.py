@@ -27,11 +27,22 @@ def create_app(test_config=None):
         )
         return response
 
-    """
-    @TODO:
-    Create an endpoint to handle GET requests
-    for all available categories.
-    """
+    @app.route('/categories')
+    def retrieve_categories():
+        selection = Category.query.order_by(Category.id).all()
+
+        if len(selection) == 0:
+            abort(404)
+
+        categories = {category.id:category.type for category in selection}
+
+        return jsonify(
+            {
+                'success': True,
+                'categories': categories
+            }
+        )
+
 
 
     """
