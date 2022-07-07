@@ -93,16 +93,27 @@ def create_app(test_config=None):
         except:
             abort(422)
 
-    """
-    @TODO:
-    Create an endpoint to POST a new question,
-    which will require the question and answer text,
-    category, and difficulty score.
+    @app.route('/questions', methods=['POST'])
+    def create_question():
+        body = request.get_json()
 
-    TEST: When you submit a question on the "Add" tab,
-    the form will clear and the question will appear at the end of the last page
-    of the questions list in the "List" tab.
-    """
+        question = body.get('question', None)
+        answer = body.get('answer', None)
+        difficulty = body.get('difficulty', None)
+        category = body.get('category', None)
+
+        try:
+            question = Question(question=question, answer=answer, difficulty=difficulty, category=category)
+            question.insert()
+
+            return jsonify(
+                {
+                    'success': True
+                }
+            )
+
+        except:
+            abort(422)
 
     """
     @TODO:
@@ -169,6 +180,13 @@ def create_app(test_config=None):
         return (
             jsonify({'success': False, 'error': 422, 'message': 'unprocessable'}),
             422
+        )
+
+    @app.errorhandler(405)
+    def method_not_allowed(error):
+        return (
+            jsonify({'success': False, 'error': 405, 'message': 'method not allowed'}),
+            405
         )
 
     return app
