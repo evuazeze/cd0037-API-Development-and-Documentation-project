@@ -90,6 +90,26 @@ class TriviaTestCase(unittest.TestCase):
         self.assertEqual(data['success'], False)
         self.assertEqual(data['message'], 'unprocessable')
 
+    def test_play_quiz(self):
+        res = self.client()\
+            .post('/quizzes', json={'previous_questions': [13, 14], 'quiz_category': {'id': '3', 'type': 'Geography'}})
+
+        data = json.loads(res.data)
+
+        self.assertEqual(res.status_code, 200)
+        self.assertEqual(data['success'], True)
+        self.assertEqual(data['question']['id'], 15)
+
+    def test_422_if_question_in_category_is_exhausted(self):
+        res = self.client() \
+            .post('/quizzes', json={'previous_questions': [13, 14, 15], 'quiz_category': {'id': '3', 'type': 'Geography'}})
+
+        data = json.loads(res.data)
+
+        self.assertEqual(res.status_code, 422)
+        self.assertEqual(data['success'], False)
+        self.assertEqual(data['message'], 'unprocessable')
+
 # Make the tests conveniently executable
 if __name__ == "__main__":
     unittest.main()
