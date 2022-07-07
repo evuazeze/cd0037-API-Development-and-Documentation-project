@@ -112,6 +112,22 @@ def create_app(test_config=None):
     categories in the left column will cause only questions of that
     category to be shown.
     """
+    @app.route('/categories/<string:category_id>/questions')
+    def retrieve_questions_by_category(category_id):
+        selection = Question.query.filter_by(category=category_id).all()
+        current_questions_by_category = paginate_questions(request, selection)
+
+        if len(current_questions_by_category) == 0:
+            abort(404)
+
+        return jsonify(
+            {
+                'success': True,
+                'questions': current_questions_by_category,
+                'total_questions': len(Question.query.all()),
+                'current_category': Category.query.filter(Category.id == int(category_id)).first().type
+            }
+        )
 
     """
     @TODO:
