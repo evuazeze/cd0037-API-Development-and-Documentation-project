@@ -45,7 +45,7 @@ def create_app(test_config=None):
         if len(selection) == 0:
             abort(404)
 
-        categories = {category.id:category.type for category in selection}
+        categories = {category.id: category.type for category in selection}
 
         return jsonify(
             {
