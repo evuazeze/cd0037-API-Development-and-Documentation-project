@@ -24,7 +24,7 @@ class TriviaTestCase(unittest.TestCase):
             'question': 'What continent is Nigeria at?',
             'answer': 'Africa',
             'difficulty': 1,
-            'category': 3
+            'category': 4
         }
 
         # binds the app to the current context
@@ -80,10 +80,10 @@ class TriviaTestCase(unittest.TestCase):
         self.assertEqual(data['message'], 'resource not found')
 
     def test_delete_question(self):
-        res = self.client().delete('/questions/9')
+        res = self.client().delete('/questions/27')
         data = json.loads(res.data)
 
-        question = Question.query.filter(Question.id == 9).one_or_none()
+        question = Question.query.filter(Question.id == 27).one_or_none()
 
         self.assertEqual(res.status_code, 200)
         self.assertEqual(data['success'], True)
@@ -131,6 +131,23 @@ class TriviaTestCase(unittest.TestCase):
         self.assertEqual(res.status_code, 405)
         self.assertEqual(data['success'], False)
         self.assertEqual(data['message'], 'method not allowed')
+
+    def test_get_question_search_with_results(self):
+        res = self.client().post('/questions', json={'searchTerm': 'Giaconda'})
+        data = json.loads(res.data)
+
+        self.assertEqual(200, res.status_code)
+        self.assertEqual(True, data['success'])
+        self.assertTrue(data['questions'])
+        self.assertEqual(1, len(data['questions']))
+
+    def test_get_question_search_without_results(self):
+        res = self.client().post('/questions', json={'searchTerm': 'Ughelli'})
+        data = json.loads(res.data)
+
+        self.assertEqual(200, res.status_code)
+        self.assertEqual(True, data['success'])
+        self.assertEqual(0, len(data['questions']))
 
 # Make the tests conveniently executable
 if __name__ == "__main__":
