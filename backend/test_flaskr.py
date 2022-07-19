@@ -14,11 +14,8 @@ class TriviaTestCase(unittest.TestCase):
         """Define test variables and initialize app."""
         self.app = create_app()
         self.client = self.app.test_client
-        self.database_name = "trivia_test"
-        self.database_path = "postgresql://{}:{}@{}/{}".format(
-            "postgres", "password", "localhost:5432", self.database_name
-        )
-        setup_db(self.app, self.database_path)
+
+        setup_db(self.app, os.getenv('TEST_DATABASE_PATH'))
 
         self.new_question = {
             'question': 'What continent is Nigeria at?',
