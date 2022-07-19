@@ -16,8 +16,7 @@ Likewise create the test database trivia_test.psql and populate
 
 `psql trivia_test < trivia.psql`
 
-Also remember to modify the database user and password for both dev and test databases
-
+Create a *variables.env* file setting the keys outlined in *variables.env.example* file
 ### Step 2: Install Dependencies
 
 Once your virtual environment is setup and running, install the required dependencies by navigating to the /backend directory and running:
